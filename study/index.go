@@ -68,14 +68,14 @@ func keepLearning(activity *selenium.WebElement, wd *selenium.WebDriver) bool {
 		return true
 	}
 
-	sections := findToLearnSections(sectionList)
+	sections := findToLearnSections(sectionList, wd)
 	log.Println("sections", sections)
 	if len(sections) == 0 {
 		return true
 	}
 
 	for index, section := range sections {
-		progress, statusText := getProgressAndStatus(&section)
+		progress, statusText := getProgressAndStatus(&section, wd)
 		elemClass, err := section.GetAttribute("class")
 		if err != nil {
 			panic(err)
@@ -114,10 +114,10 @@ func findSectionList(wd *selenium.WebDriver) []selenium.WebElement {
 	return sectionList
 }
 
-func findToLearnSections(list []selenium.WebElement) []selenium.WebElement {
+func findToLearnSections(list []selenium.WebElement, wd *selenium.WebDriver) []selenium.WebElement {
 	sections := []selenium.WebElement{}
 	for _, section := range list {
-		progress, statusText := getProgressAndStatus(&section)
+		progress, statusText := getProgressAndStatus(&section, wd)
 
 		if progress == "" && statusText == "" {
 			continue
@@ -131,9 +131,13 @@ func findToLearnSections(list []selenium.WebElement) []selenium.WebElement {
 	return sections
 }
 
-func getProgressAndStatus(section *selenium.WebElement) (string, string) {
+func getProgressAndStatus(section *selenium.WebElement, wd *selenium.WebDriver) (string, string) {
 	progress := ""
 	statusText := ""
+	err := (*wd).SetImplicitWaitTimeout(time.Duration(15))
+	if err != nil {
+		panic(err)
+	}
 	status, err := (*section).FindElement(selenium.ByCSSSelector, ".pointer")
 	if err != nil {
 		panic(err)
