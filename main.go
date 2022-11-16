@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	initial "selenium-test/initial"
 	"time"
 
@@ -34,6 +35,7 @@ func CheckLogged(wd *selenium.WebDriver, result chan bool, errCh chan error) {
 			result <- true
 			return
 		}
+		time.Sleep(10 * time.Second)
 	}
 }
 
@@ -87,8 +89,9 @@ func studyArticles(wd *selenium.WebDriver) (bool, error) {
 		time.Sleep(3 * time.Second)
 
 		focus(wd)
-		(*wd).ExecuteScript("window.scrollBy(0, 2000);", nil)
-		time.Sleep(65 * time.Second)
+		(*wd).ExecuteScript("window.scrollBy(0, 3000);", nil)
+		randsecond := rand.Intn(50)
+		time.Sleep(time.Duration(randsecond+60) * time.Second)
 
 		wins, err := (*wd).WindowHandles()
 		if err != nil {
@@ -149,6 +152,9 @@ func main() {
 
 	resultCh := make(chan bool)
 	errCh := make(chan error)
+
+	wins, _ := wd.WindowHandles()
+	wd.MaximizeWindow(wins[len(wins)-1])
 
 	go CheckLogged(&wd, resultCh, errCh)
 
