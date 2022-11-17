@@ -19,7 +19,9 @@ func main() {
 	defer service.Stop()
 
 	wd := wbo.CreateWebDriver()
-	time.Sleep(5 * time.Second)
+	defer wd.Quit()
+
+	time.Sleep(45 * time.Second)
 
 	err := wbo.Login(&wd)
 	if err != nil {
