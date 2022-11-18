@@ -21,7 +21,7 @@ func main() {
 	wd := wbo.CreateWebDriver()
 	defer wd.Quit()
 
-	time.Sleep(45 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	err := wbo.Login(&wd)
 	if err != nil {
