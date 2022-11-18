@@ -13,6 +13,8 @@ type WebDriverOptions struct {
 	Port             int
 	Url              string
 	CourseDetailUri  string
+	Username         string
+	Password         string
 }
 
 func (wbo *WebDriverOptions) Init() *selenium.Service {
@@ -48,7 +50,7 @@ func (wbo *WebDriverOptions) Login(wd *selenium.WebDriver) error {
 	if err != nil {
 		return err
 	}
-	err = we.SendKeys("15618137573")
+	err = we.SendKeys(wbo.Username)
 	if err != nil {
 		return err
 	}
@@ -57,7 +59,7 @@ func (wbo *WebDriverOptions) Login(wd *selenium.WebDriver) error {
 	if err != nil {
 		return err
 	}
-	err = psi.SendKeys("gmc951120")
+	err = psi.SendKeys(wbo.Password)
 	if err != nil {
 		return err
 	}
