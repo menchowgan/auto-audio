@@ -121,8 +121,8 @@ func studyVideos(wd *selenium.WebDriver) (bool, error) {
 	for _, video := range videos {
 		video.Click()
 		time.Sleep(2 * time.Second)
-		focus(wd)
 		for {
+			focus(wd)
 			we, _ := (*wd).FindElement(selenium.ByCSSSelector, ".replay-btn")
 			if we != nil {
 				break
