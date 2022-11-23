@@ -91,7 +91,7 @@ func studyArticles(wd *selenium.WebDriver) (bool, error) {
 		time.Sleep(3 * time.Second)
 
 		focus(wd)
-		(*wd).ExecuteScript("window.scrollBy(0, 3000);", nil)
+		(*wd).ExecuteScript("window.scrollBy(0, 4000);", nil)
 		randsecond := rand.Intn(50)
 		time.Sleep(time.Duration(randsecond+60) * time.Second)
 
