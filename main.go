@@ -140,6 +140,11 @@ func studyVideos(wd *selenium.WebDriver) (bool, error) {
 	return true, nil
 }
 
+func timeoutCheck(timeoutCh chan bool) {
+	time.Sleep(30 * time.Second)
+	timeoutCh <- true
+}
+
 func main() {
 	wbo := initial.WebDriverOptions{
 		ChromeDriverPath: "./chromedriver",
@@ -154,11 +159,13 @@ func main() {
 
 	resultCh := make(chan bool)
 	errCh := make(chan error)
+	timeoutCh := make(chan bool)
 
 	wins, _ := wd.WindowHandles()
 	wd.MaximizeWindow(wins[len(wins)-1])
 
 	go CheckLogged(&wd, resultCh, errCh)
+	go timeoutCheck(timeoutCh)
 
 	select {
 	case result := <-resultCh:
@@ -186,6 +193,9 @@ func main() {
 			log.Println("Be panic and stop")
 			panic(err)
 		}
+	case isTimeout := <-timeoutCh:
+		log.Println("not logged in 30 seconds,", isTimeout)
+		return
 	}
 
 	// activitiesToStart, err := wbo.FindActivitiesToStart(&wd)
