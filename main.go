@@ -20,15 +20,11 @@ func CheckLogged(wd *selenium.WebDriver, result chan bool, errCh chan error) {
 		log.Println("loggedText", loggedText, err)
 
 		if err != nil {
-			log.Println("not found 1")
-			time.Sleep(10 * time.Second)
 			continue
 		}
 
 		displayed, err := loggedText.IsDisplayed()
 		if err != nil {
-			log.Println("not found 2")
-			time.Sleep(10 * time.Second)
 			continue
 		}
 		log.Println("displayed", displayed)
@@ -36,7 +32,6 @@ func CheckLogged(wd *selenium.WebDriver, result chan bool, errCh chan error) {
 			result <- true
 			return
 		}
-		time.Sleep(3 * time.Second)
 	}
 }
 
