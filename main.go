@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"math/rand"
 	initial "selenium-test/initial"
 	"time"
 
@@ -37,7 +36,7 @@ func CheckLogged(wd *selenium.WebDriver, result chan bool, errCh chan error) {
 			result <- true
 			return
 		}
-		time.Sleep(10 * time.Second)
+		time.Sleep(3 * time.Second)
 	}
 }
 
@@ -83,6 +82,17 @@ func StartStudy(wd *selenium.WebDriver) {
 	}
 }
 
+func scrollWindow(wd *selenium.WebDriver, scrollCh chan int) {
+	i := 0
+	for ; i < 60; i++ {
+		time.Sleep(3 * time.Second)
+		(*wd).ExecuteScript("window.scrollBy(0, 250);", nil)
+	}
+	if i == 60 {
+		scrollCh <- 1
+	}
+}
+
 func studyArticles(wd *selenium.WebDriver) (bool, error) {
 	ats := FindArticleToRead(wd)
 	log.Println("articles to read", ats)
@@ -91,17 +101,18 @@ func studyArticles(wd *selenium.WebDriver) (bool, error) {
 		time.Sleep(3 * time.Second)
 
 		focus(wd)
-		(*wd).ExecuteScript("window.scrollBy(0, 4000);", nil)
-		randsecond := rand.Intn(50)
-		time.Sleep(time.Duration(randsecond+60) * time.Second)
+		scrollCh := make(chan int)
+		go scrollWindow(wd, scrollCh)
 
-		wins, err := (*wd).WindowHandles()
-		if err != nil {
-			return false, err
+		select {
+		case <-scrollCh:
+			wins, err := (*wd).WindowHandles()
+			if err != nil {
+				return false, err
+			}
+			(*wd).CloseWindow(wins[len(wins)-1])
+			focus(wd)
 		}
-		(*wd).CloseWindow(wins[len(wins)-1])
-		focus(wd)
-
 	}
 	return true, nil
 }
@@ -197,21 +208,4 @@ func main() {
 		log.Println("not logged in 30 seconds,", isTimeout)
 		return
 	}
-
-	// activitiesToStart, err := wbo.FindActivitiesToStart(&wd)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// if len(activitiesToStart) == 0 {
-	// 	log.Println("课程已学完")
-	// 	return
-	// }
-
-	// learnner := study.Activities{
-	// 	ActivitiesToStart: activitiesToStart,
-	// }
-
-	// learnner.Learn(&wd)
-
 }
